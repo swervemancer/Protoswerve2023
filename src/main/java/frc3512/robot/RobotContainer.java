@@ -9,7 +9,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc3512.robot.commands.driving.TeleopSwerve;
 import frc3512.robot.subsystems.drive.Swerve;
+import frc3512.robot.subsystems.drive.gyro.GyroIO;
 import frc3512.robot.subsystems.drive.gyro.GyroIOPigeon2;
+import frc3512.robot.subsystems.drive.module.ModuleIO;
+import frc3512.robot.subsystems.drive.module.ModuleIOSim;
 import frc3512.robot.subsystems.drive.module.ModuleIOSparkMAX;
 
 /**
@@ -53,11 +56,29 @@ public class RobotContainer {
                   new ModuleIOSparkMAX(3));
           break;
         case ROBOT_2022_SIM:
+          m_swerve =
+              new Swerve(
+                  new GyroIO() {},
+                  new ModuleIOSim(),
+                  new ModuleIOSim(),
+                  new ModuleIOSim(),
+                  new ModuleIOSim());
           break;
         default:
           break;
       }
     }
+
+    // Register any missing subsystems
+    m_swerve =
+        m_swerve != null
+            ? m_swerve
+            : new Swerve(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
 
     configureButtonBindings();
     configureAxisActions();

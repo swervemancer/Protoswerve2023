@@ -27,7 +27,7 @@ public final class Constants {
   /** General robot constants */
   public static final class General {
     /** The mode you want to run the robot in. Change it to reflect what you want to run it in. */
-    private static final RobotMode robot = RobotMode.ROBOT_2022_REAL;
+    private static final RobotMode robot = RobotMode.ROBOT_2022_SIM;
 
     // Joystick axis deadband for the swerve drive
     public static final double swerveDeadband = 0.1;
