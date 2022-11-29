@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc3512.robot.auton.TestAuto;
 import frc3512.robot.commands.driving.TeleopSwerve;
 import frc3512.robot.subsystems.drive.Swerve;
 import frc3512.robot.subsystems.drive.gyro.GyroIO;
@@ -113,6 +114,7 @@ public class RobotContainer {
 
     // Register autons.
     m_autonChooser.setDefaultOption("No-op", new InstantCommand());
+    m_autonChooser.addOption("TestAuton", new TestAuto(m_swerve));
 
     // Push the chooser to the dashboard.
     SmartDashboard.putData("Auton Chooser", m_autonChooser);

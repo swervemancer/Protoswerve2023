@@ -122,7 +122,7 @@ public class Swerve extends SubsystemBase {
     }
     Logger.getInstance()
         .recordOutput(
-            "SwerveOdometry",
+            "Odometry",
             new double[] {
               getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()
             });
