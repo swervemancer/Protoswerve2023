@@ -1,6 +1,7 @@
 package frc3512.robot.commands.driving;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc3512.robot.Constants;
@@ -14,6 +15,10 @@ public class TeleopSwerve extends CommandBase {
   private DoubleSupplier strafeSup;
   private DoubleSupplier rotationSup;
   private BooleanSupplier robotCentricSup;
+
+  private SlewRateLimiter translationLimiter = new SlewRateLimiter(3.0);
+  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.0);
+  private SlewRateLimiter rotationLimiter = new SlewRateLimiter(3.0);
 
   public TeleopSwerve(
       Swerve s_Swerve,
@@ -34,12 +39,14 @@ public class TeleopSwerve extends CommandBase {
   public void execute() {
     /* Get Values, Deadband*/
     double translationVal =
-        MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.General.swerveDeadband)
-            * 0.5;
+        translationLimiter.calculate(
+            MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.General.swerveDeadband));
     double strafeVal =
-        MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.General.swerveDeadband) * 0.5;
+        strafeLimiter.calculate(
+            MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.General.swerveDeadband));
     double rotationVal =
-        MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.General.swerveDeadband) * 0.5;
+        rotationLimiter.calculate(
+            MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.General.swerveDeadband));
 
     /* Drive */
     s_Swerve.drive(

@@ -86,11 +86,6 @@ public class RobotContainer {
     registerAutons();
   }
 
-  /** Actions we do in disabled mode. */
-  public void disabledActions() {
-    m_swerve.resetModuleZeros();
-  }
-
   /** Used for defining button actions. */
   private void configureButtonBindings() {
 

@@ -153,6 +153,7 @@ public class ModuleIOSparkMAX implements ModuleIO {
     angleController.setFF(Constants.Swerve.angleKFF);
     angleMotor.enableVoltageCompensation(Constants.General.voltageComp);
     angleMotor.burnFlash();
+    resetAbsolute();
   }
 
   private void configDriveMotor() {
@@ -214,5 +215,13 @@ public class ModuleIOSparkMAX implements ModuleIO {
   public void stop() {
     driveMotor.stopMotor();
     angleMotor.stopMotor();
+  }
+
+  @Override
+  public void resetAbsolute() {
+    double absolutePosition =
+        Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition()).getDegrees()
+            - angleOffset.getDegrees();
+    setTurnEncoder(absolutePosition);
   }
 }

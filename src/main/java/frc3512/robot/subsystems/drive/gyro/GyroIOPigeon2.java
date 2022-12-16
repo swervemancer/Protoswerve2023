@@ -3,7 +3,6 @@ package frc3512.robot.subsystems.drive.gyro;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.Pigeon2;
 import frc3512.robot.Constants;
-import frc3512.robot.Robot;
 
 public class GyroIOPigeon2 implements GyroIO {
 
@@ -14,7 +13,6 @@ public class GyroIOPigeon2 implements GyroIO {
     switch (Constants.General.getRobot()) {
       case ROBOT_2022_REAL:
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
-        gyro.configAllSettings(Robot.ctreConfigs.pigeonConfig);
         break;
       default:
         throw new RuntimeException("Invalid robot for GyroIOPigeon2");

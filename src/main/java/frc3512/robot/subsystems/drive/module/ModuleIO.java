@@ -72,4 +72,7 @@ public interface ModuleIO {
 
   /** Stop the motors. */
   public default void stop() {}
+
+  /* Sets the module offset */
+  public default void resetAbsolute() {}
 }

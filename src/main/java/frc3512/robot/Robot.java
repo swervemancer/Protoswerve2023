@@ -70,10 +70,12 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
+    /*
     // If not running after an auton, then constantly reset the swerve modules.
     if (!runningAuton) {
       m_robotContainer.disabledActions();
     }
+    */
   }
 
   @Override

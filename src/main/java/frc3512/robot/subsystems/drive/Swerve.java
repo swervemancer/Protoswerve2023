@@ -7,6 +7,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.robot.Constants;
 import frc3512.robot.subsystems.drive.gyro.GyroIO;
@@ -21,8 +23,10 @@ public class Swerve extends SubsystemBase {
 
   private final ModuleIO[] moduleIOs = new ModuleIO[4]; // FL, FR, BL, BR
 
-  public SwerveDriveOdometry swerveOdometry;
-  public SwerveModule[] mSwerveMods;
+  private SwerveDriveOdometry swerveOdometry;
+  private SwerveModule[] mSwerveMods;
+
+  private Field2d field;
 
   /** Subsystem class for the swerve drive. */
   public Swerve(
@@ -40,6 +44,8 @@ public class Swerve extends SubsystemBase {
     zeroGyro();
 
     swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw());
+    field = new Field2d();
+    SmartDashboard.putData("Field", field);
 
     mSwerveMods =
         new SwerveModule[] {
@@ -86,12 +92,6 @@ public class Swerve extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     swerveOdometry.resetPosition(pose, getYaw());
-  }
-
-  public void resetModuleZeros() {
-    for (SwerveModule mod : mSwerveMods) {
-      mod.resetToAbsolute();
-    }
   }
 
   public SwerveModuleState[] getStates() {

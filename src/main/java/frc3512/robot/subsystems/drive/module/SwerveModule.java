@@ -68,11 +68,6 @@ public class SwerveModule {
     moduleIO.stop();
   }
 
-  public void resetToAbsolute() {
-    double absolutePosition = getCanCoder().getDegrees() - moduleInputs.turnAbsolutePositionOffset;
-    moduleIO.setTurnEncoder(absolutePosition);
-  }
-
   public SwerveModuleState getState() {
     return new SwerveModuleState(moduleInputs.driveVelocityMeterPerSec, getAngle());
   }
