@@ -17,7 +17,6 @@ public class Robot extends LoggedRobot {
   public static CTREConfigs ctreConfigs;
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
-  private boolean runningAuton = false;
 
   @Override
   public void robotInit() {
@@ -69,18 +68,10 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {
-    /*
-    // If not running after an auton, then constantly reset the swerve modules.
-    if (!runningAuton) {
-      m_robotContainer.disabledActions();
-    }
-    */
-  }
+  public void disabledPeriodic() {}
 
   @Override
   public void autonomousInit() {
-    runningAuton = true;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -94,7 +85,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    runningAuton = false;
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
