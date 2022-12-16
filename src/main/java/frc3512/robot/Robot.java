@@ -43,16 +43,16 @@ public class Robot extends LoggedRobot {
 
     logger.start();
 
-    // Silence joystick connection warnings.
-    // Also diable LiveWindow as we don't find use in it.
-    DriverStation.silenceJoystickConnectionWarning(true);
-    LiveWindow.disableAllTelemetry();
-
     ctreConfigs = new CTREConfigs();
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    // Silence joystick connection warnings.
+    // Also diable LiveWindow as we don't find use in it.
+    DriverStation.silenceJoystickConnectionWarning(true);
+    LiveWindow.disableAllTelemetry();
   }
 
   @Override
