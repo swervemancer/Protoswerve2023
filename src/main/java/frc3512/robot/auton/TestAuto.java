@@ -8,7 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc3512.robot.Constants;
-import frc3512.robot.subsystems.drive.Swerve;
+import frc3512.robot.subsystems.Swerve;
 
 public class TestAuto extends SequentialCommandGroup {
   public TestAuto(Swerve swerve) {

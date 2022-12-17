@@ -1,58 +1,34 @@
 package frc3512.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc3512.lib.config.CTREConfigs;
-import frc3512.robot.Constants.RunningMode;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.ByteLogReceiver;
-import org.littletonrobotics.junction.io.ByteLogReplay;
-import org.littletonrobotics.junction.io.LogSocketServer;
+import frc3512.lib.logging.SpartanLogManager;
 
-public class Robot extends LoggedRobot {
+public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
   @Override
   public void robotInit() {
-    Logger logger = Logger.getInstance();
-    setUseTiming(Constants.General.getMode() != RunningMode.REPLAY);
-    LoggedNetworkTables.getInstance().addTable("/SmartDashboard");
+    ctreConfigs = new CTREConfigs();
 
-    switch (Constants.General.getMode()) {
-      case REAL:
-        logger.addDataReceiver(new ByteLogReceiver("/home/lvuser"));
-        logger.addDataReceiver(new LogSocketServer(5900));
-        break;
-
-      case SIM:
-        logger.addDataReceiver(new LogSocketServer(5900));
-        break;
-
-      case REPLAY:
-        String path = ByteLogReplay.promptForPath();
-        logger.setReplaySource(new ByteLogReplay(path));
-        logger.addDataReceiver(new ByteLogReceiver(ByteLogReceiver.addPathSuffix(path, "_sim")));
-        break;
-    }
-
-    logger.start();
+    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // autonomous chooser on the dashboard.
+    m_robotContainer = new RobotContainer();
 
     // Silence joystick connection warnings.
     // Also diable LiveWindow as we don't find use in it.
     DriverStation.silenceJoystickConnectionWarning(true);
     LiveWindow.disableAllTelemetry();
 
-    ctreConfigs = new CTREConfigs();
-
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    // Enable logging
+    SpartanLogManager.setCompetitionMode(Constants.General.competitionMode);
+    SpartanLogManager.startLogging();
   }
 
   @Override
@@ -62,6 +38,9 @@ public class Robot extends LoggedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Process and log all of the entered log entries.
+    SpartanLogManager.processEntries();
   }
 
   @Override
