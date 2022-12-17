@@ -13,14 +13,17 @@ public class SpartanBooleanEntry implements SpartanLogEntry {
 
   public SpartanBooleanEntry(String name, long timestamp) {
     log = new BooleanLogEntry(logInstance, name, timestamp);
+    SpartanLogManager.addEntry(this);
   }
 
   public SpartanBooleanEntry(String name, String metadata) {
     log = new BooleanLogEntry(logInstance, name, metadata);
+    SpartanLogManager.addEntry(this);
   }
 
   public SpartanBooleanEntry(String name) {
     log = new BooleanLogEntry(logInstance, name);
+    SpartanLogManager.addEntry(this);
   }
 
   /**

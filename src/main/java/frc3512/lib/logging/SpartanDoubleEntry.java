@@ -13,14 +13,17 @@ public class SpartanDoubleEntry implements SpartanLogEntry {
 
   public SpartanDoubleEntry(String name, long timestamp) {
     log = new DoubleLogEntry(logInstance, name, timestamp);
+    SpartanLogManager.addEntry(this);
   }
 
   public SpartanDoubleEntry(String name, String metadata) {
     log = new DoubleLogEntry(logInstance, name, metadata);
+    SpartanLogManager.addEntry(this);
   }
 
   public SpartanDoubleEntry(String name) {
     log = new DoubleLogEntry(logInstance, name);
+    SpartanLogManager.addEntry(this);
   }
 
   /**

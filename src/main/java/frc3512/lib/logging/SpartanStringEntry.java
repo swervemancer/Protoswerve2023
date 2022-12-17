@@ -13,14 +13,17 @@ public class SpartanStringEntry implements SpartanLogEntry {
 
   public SpartanStringEntry(String name, long timestamp) {
     log = new StringLogEntry(logInstance, name, timestamp);
+    SpartanLogManager.addEntry(this);
   }
 
   public SpartanStringEntry(String name, String metadata) {
     log = new StringLogEntry(logInstance, name, metadata);
+    SpartanLogManager.addEntry(this);
   }
 
   public SpartanStringEntry(String name) {
     log = new StringLogEntry(logInstance, name);
+    SpartanLogManager.addEntry(this);
   }
 
   /**
