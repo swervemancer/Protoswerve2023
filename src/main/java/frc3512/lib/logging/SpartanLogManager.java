@@ -3,15 +3,27 @@ package frc3512.lib.logging;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import frc3512.robot.Robot;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Wrapper class around the DataLogManager for additional features. */
 public class SpartanLogManager {
 
   private static boolean isCompetition = false;
   private static DataLog log = DataLogManager.getLog();
+  private static List<SpartanLogEntry> entryList = new ArrayList<>();
 
   private SpartanLogManager() {
     throw new AssertionError("No constructor needed!");
+  }
+
+  /**
+   * Adds entry into the entry list. Must use the SpartanLogEntry interface.
+   *
+   * @param entry Entry you want to add.
+   */
+  public static void addEntry(SpartanLogEntry entry) {
+    entryList.add(entry);
   }
 
   /**
@@ -28,6 +40,13 @@ public class SpartanLogManager {
     if (Robot.isReal()) {
       DataLogManager.logNetworkTables(false);
       DataLogManager.start();
+    }
+  }
+
+  /** Logs all entered entries into the DataLog file. */
+  public static void processEntries() {
+    for (SpartanLogEntry entry : entryList) {
+      entry.processEntry();
     }
   }
 
