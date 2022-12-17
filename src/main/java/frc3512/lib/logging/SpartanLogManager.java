@@ -4,9 +4,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import frc3512.robot.Robot;
 
-/** 
- * Wrapper class around the DataLogManager for additional features. 
- */
+/** Wrapper class around the DataLogManager for additional features. */
 public class SpartanLogManager {
 
   private static boolean isCompetition = false;

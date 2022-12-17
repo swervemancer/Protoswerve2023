@@ -5,8 +5,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * Utility class for creating NetworkTable entries.
- * 
- * Note: These values are not included in the DataLog.
+ *
+ * <p>Note: These values are not included in the DataLog.
  */
 public class NetworkTableUtil {
 
