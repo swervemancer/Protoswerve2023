@@ -1,5 +1,6 @@
-package frc3512.robot.subsystems.drive;
+package frc3512.robot.subsystems;
 
+import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -11,17 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.robot.Constants;
-import frc3512.robot.subsystems.drive.gyro.GyroIO;
-import frc3512.robot.subsystems.drive.gyro.GyroIO.GyroIOInputs;
-import frc3512.robot.subsystems.drive.module.ModuleIO;
-import frc3512.robot.subsystems.drive.module.SwerveModule;
-import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
-  private final GyroIO gyroIO;
-  private final GyroIOInputs gyroInputs = new GyroIOInputs();
-
-  private final ModuleIO[] moduleIOs = new ModuleIO[4]; // FL, FR, BL, BR
+  private final Pigeon2 gyro;
 
   private SwerveDriveOdometry swerveOdometry;
   private SwerveModule[] mSwerveMods;
@@ -29,18 +22,9 @@ public class Swerve extends SubsystemBase {
   private Field2d field;
 
   /** Subsystem class for the swerve drive. */
-  public Swerve(
-      GyroIO gyroIO,
-      ModuleIO flModuleIO,
-      ModuleIO frModuleIO,
-      ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
-    this.gyroIO = gyroIO;
-    moduleIOs[0] = flModuleIO;
-    moduleIOs[1] = frModuleIO;
-    moduleIOs[2] = blModuleIO;
-    moduleIOs[3] = brModuleIO;
-
+  public Swerve() {
+    gyro = new Pigeon2(Constants.Swerve.pigeonID);
+    gyro.configFactoryDefault();
     zeroGyro();
 
     swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw());
@@ -49,10 +33,10 @@ public class Swerve extends SubsystemBase {
 
     mSwerveMods =
         new SwerveModule[] {
-          new SwerveModule(0, flModuleIO),
-          new SwerveModule(1, frModuleIO),
-          new SwerveModule(2, blModuleIO),
-          new SwerveModule(3, brModuleIO)
+          new SwerveModule(0, Constants.Swerve.Mod0.constants),
+          new SwerveModule(1, Constants.Swerve.Mod1.constants),
+          new SwerveModule(2, Constants.Swerve.Mod2.constants),
+          new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
   }
 
@@ -68,12 +52,6 @@ public class Swerve extends SubsystemBase {
 
     for (SwerveModule mod : mSwerveMods) {
       mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
-    }
-  }
-
-  public void stop() {
-    for (SwerveModule mod : mSwerveMods) {
-      mod.stop();
     }
   }
 
@@ -103,28 +81,17 @@ public class Swerve extends SubsystemBase {
   }
 
   public void zeroGyro() {
-    gyroIO.resetGyro();
+    gyro.setYaw(0);
   }
 
   public Rotation2d getYaw() {
     return (Constants.Swerve.invertGyro)
-        ? Rotation2d.fromDegrees(360 - gyroInputs.positionDegree)
-        : Rotation2d.fromDegrees(gyroInputs.positionDegree);
+        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
+        : Rotation2d.fromDegrees(gyro.getYaw());
   }
 
   @Override
   public void periodic() {
     swerveOdometry.update(getYaw(), getStates());
-    gyroIO.updateInputs(gyroInputs);
-    Logger.getInstance().processInputs("Swerve/Gyro", gyroInputs);
-    for (SwerveModule mod : mSwerveMods) {
-      mod.updateModule();
-    }
-    Logger.getInstance()
-        .recordOutput(
-            "Odometry",
-            new double[] {
-              getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()
-            });
   }
 }
