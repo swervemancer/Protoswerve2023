@@ -11,6 +11,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc3512.lib.logging.SpartanDoubleEntry;
+import frc3512.lib.logging.SpartanPose2dEntry;
 import frc3512.robot.Constants;
 
 public class Swerve extends SubsystemBase {
@@ -20,6 +22,8 @@ public class Swerve extends SubsystemBase {
   private SwerveModule[] mSwerveMods;
 
   private Field2d field;
+  private final SpartanDoubleEntry gyroYaw;
+  private final SpartanPose2dEntry odometryPose;
 
   /** Subsystem class for the swerve drive. */
   public Swerve() {
@@ -30,6 +34,8 @@ public class Swerve extends SubsystemBase {
     swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw());
     field = new Field2d();
     SmartDashboard.putData("Field", field);
+    gyroYaw = new SpartanDoubleEntry("Swerve/Gyro/Yaw");
+    odometryPose = new SpartanPose2dEntry("Swerve/Odometry");
 
     mSwerveMods =
         new SwerveModule[] {
@@ -93,5 +99,10 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     swerveOdometry.update(getYaw(), getStates());
+    for (SwerveModule mod : mSwerveMods) {
+      mod.periodic();
+    }
+    gyroYaw.append(getYaw().getDegrees());
+    odometryPose.append(getPose());
   }
 }

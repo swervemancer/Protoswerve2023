@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc3512.lib.config.SwerveModuleConstants;
+import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.lib.math.OnboardModuleState;
 import frc3512.lib.util.CANCoderUtil;
 import frc3512.lib.util.CANCoderUtil.CANCoderUsage;
@@ -37,6 +38,10 @@ public class SwerveModule {
       new SimpleMotorFeedforward(
           Constants.Swerve.driveKS, Constants.Swerve.driveKV, Constants.Swerve.driveKA);
 
+  private final SpartanDoubleEntry cancoderReading;
+  private final SpartanDoubleEntry integratedReading;
+  private final SpartanDoubleEntry velocityReading;
+
   /**
    * Creates a new swerve module with NEO motors and a CTRE CANCoder.
    *
@@ -62,6 +67,11 @@ public class SwerveModule {
     driveEncoder = driveMotor.getEncoder();
     driveController = driveMotor.getPIDController();
     configDriveMotor();
+
+    /* Logging Config */
+    cancoderReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/CANCoder");
+    integratedReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Integrated");
+    velocityReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Velocity");
 
     lastAngle = getState().angle;
   }
@@ -161,6 +171,8 @@ public class SwerveModule {
   }
 
   public void periodic() {
-
+    cancoderReading.append(getCanCoder().getDegrees());
+    integratedReading.append(getAngle().getDegrees());
+    velocityReading.append(driveEncoder.getVelocity());
   }
 }
