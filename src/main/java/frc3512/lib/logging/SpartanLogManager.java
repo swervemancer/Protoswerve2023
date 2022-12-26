@@ -22,10 +22,8 @@ public class SpartanLogManager {
 
   /** Start logging (if running on real hardware). */
   public static void startLogging() {
-    if (isCompetition()) {
-      DataLogManager.logNetworkTables(false);
-      DataLogManager.start();
-    }
+    DataLogManager.logNetworkTables(false);
+    DataLogManager.start();
   }
 
   /**

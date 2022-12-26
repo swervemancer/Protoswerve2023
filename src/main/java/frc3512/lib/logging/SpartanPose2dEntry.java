@@ -1,55 +1,59 @@
 package frc3512.lib.logging;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 
-public class SpartanPose2dEntry implements SpartanLogEntry {
+/** Sets up a double array value in NetworkTables with the option to be logged */
+public class SpartanPose2dEntry {
 
-  private Pose2d pose = new Pose2d();
+  private DoubleArrayTopic topic;
+  private DoubleArrayPublisher pub;
+  private DoubleArraySubscriber sub;
   private DoubleArrayLogEntry log;
-  private long logTimestamp = 0;
-  private final DataLog logInstance = SpartanLogManager.getCurrentLog();
-
-  public SpartanPose2dEntry(String name, long timestamp) {
-    log = new DoubleArrayLogEntry(logInstance, name, timestamp);
-    SpartanLogManager.addEntry(this);
-  }
-
-  public SpartanPose2dEntry(String name, String metadata) {
-    log = new DoubleArrayLogEntry(logInstance, name, metadata);
-    SpartanLogManager.addEntry(this);
-  }
+  private Pose2d pose = new Pose2d();
+  double[] defaultValue = new double[] {};
+  boolean logged = false;
+  DataLog logInstance = SpartanLogManager.getCurrentLog();
 
   public SpartanPose2dEntry(String name) {
+    this(name, new Pose2d());
+  }
+
+  public SpartanPose2dEntry(String name, Pose2d value) {
+    this(name, value, false);
+  }
+
+  public SpartanPose2dEntry(String name, Pose2d value, boolean logged) {
+    this.pose = value;
+    this.logged = logged;
+
+    double[] converted = new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
+    this.defaultValue = converted;
+
+    topic = SpartanLogManager.getNTInstance().getDoubleArrayTopic(name);
     log = new DoubleArrayLogEntry(logInstance, name);
-    SpartanLogManager.addEntry(this);
   }
 
-  /**
-   * Appends a record to the log.
-   *
-   * @param value Value to record
-   * @param timestamp Time stamp (may be 0 to indicate now)
-   */
-  public void append(Pose2d value, long timestamp) {
-    pose = value;
-    logTimestamp = timestamp;
+  public void set(Pose2d value) {
+    if (pub == null) pub = topic.publish();
+    double[] converted =
+        new double[] {value.getX(), value.getY(), value.getRotation().getDegrees()};
+    pub.set(converted);
+    if (SpartanLogManager.isCompetition() && logged) log.append(converted);
   }
 
-  /**
-   * Appends a record to the log.
-   *
-   * @param value Value to record
-   */
-  public void append(Pose2d value) {
-    pose = value;
-    logTimestamp = 0;
-  }
-
-  @Override
-  public void processEntry() {
-    log.append(
-        new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()}, logTimestamp);
+  public Pose2d get() {
+    if (sub == null) sub = topic.subscribe(defaultValue);
+    var currValue = sub.get();
+    Pose2d converted =
+        new Pose2d(
+            new Translation2d(currValue[0], currValue[1]), Rotation2d.fromDegrees(currValue[2]));
+    return converted;
   }
 }

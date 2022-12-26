@@ -70,9 +70,10 @@ public class SwerveModule {
     configDriveMotor();
 
     /* Logging Config */
-    cancoderReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/CANCoder");
-    integratedReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Integrated");
-    velocityReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Velocity");
+    cancoderReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/CANCoder", 0.0, true);
+    integratedReading =
+        new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Integrated", 0.0, true);
+    velocityReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Velocity", 0.0, true);
 
     lastAngle = getState().angle;
   }
@@ -176,8 +177,8 @@ public class SwerveModule {
   }
 
   public void periodic() {
-    cancoderReading.append(getCanCoder().getDegrees());
-    integratedReading.append(getAngle().getDegrees());
-    velocityReading.append(driveEncoder.getVelocity());
+    cancoderReading.set(getCanCoder().getDegrees());
+    integratedReading.set(getAngle().getDegrees());
+    velocityReading.set(driveEncoder.getVelocity());
   }
 }

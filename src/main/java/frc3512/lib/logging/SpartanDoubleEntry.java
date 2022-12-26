@@ -21,24 +21,25 @@ public class SpartanDoubleEntry {
     this(name, 0.0);
   }
 
-  public SpartanDoubleEntry(String name, double defaultValue) {
-    this(name, defaultValue, false);
+  public SpartanDoubleEntry(String name, double value) {
+    this(name, value, false);
   }
 
-  public SpartanDoubleEntry(String name, double defaultValue, boolean logged) {
-    this.defaultValue = defaultValue;
+  public SpartanDoubleEntry(String name, double value, boolean logged) {
+    this.defaultValue = value;
     this.logged = logged;
-
-    pub = topic.publish();
-    sub = topic.subscribe(defaultValue);
+    topic = SpartanLogManager.getNTInstance().getDoubleTopic(name);
+    log = new DoubleLogEntry(logInstance, name);
   }
 
   public void set(double value) {
+    if (pub == null) pub = topic.publish();
     pub.set(value);
-    if (SpartanLogManager.isCompetition()) log.append(value);
+    if (SpartanLogManager.isCompetition() && logged) log.append(value);
   }
 
   public double get() {
+    if (sub == null) sub = topic.subscribe(defaultValue);
     var currValue = sub.get();
     return currValue;
   }

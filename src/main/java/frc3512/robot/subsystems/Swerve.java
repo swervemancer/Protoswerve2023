@@ -45,8 +45,8 @@ public class Swerve extends SubsystemBase {
             Constants.Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d());
     field = new Field2d();
     SmartDashboard.putData("Field", field);
-    gyroYaw = new SpartanDoubleEntry("Swerve/Gyro/Yaw");
-    odometryPose = new SpartanPose2dEntry("Swerve/Odometry");
+    gyroYaw = new SpartanDoubleEntry("Swerve/Gyro/Yaw", 0.0, true);
+    odometryPose = new SpartanPose2dEntry("Swerve/Odometry", new Pose2d(), true);
   }
 
   public void drive(
@@ -64,7 +64,6 @@ public class Swerve extends SubsystemBase {
     }
   }
 
-  /* Used by SwerveControllerCommand in Auto */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
@@ -113,7 +112,7 @@ public class Swerve extends SubsystemBase {
     for (SwerveModule mod : mSwerveMods) {
       mod.periodic();
     }
-    gyroYaw.append(getYaw().getDegrees());
-    odometryPose.append(getPose());
+    gyroYaw.set(getYaw().getDegrees());
+    odometryPose.set(getPose());
   }
 }
