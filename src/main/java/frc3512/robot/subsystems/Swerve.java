@@ -1,12 +1,12 @@
 package frc3512.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -19,7 +19,7 @@ import frc3512.robot.Constants;
 public class Swerve extends SubsystemBase {
   private final Pigeon2 gyro;
 
-  private SwerveDriveOdometry swerveOdometry;
+  private SwerveDrivePoseEstimator swervePoseEstimator;
   private SwerveModule[] mSwerveMods;
 
   private Field2d field;
@@ -40,8 +40,9 @@ public class Swerve extends SubsystemBase {
           new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
-    swerveOdometry =
-        new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getPositions());
+    swervePoseEstimator =
+        new SwerveDrivePoseEstimator(
+            Constants.Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d());
     field = new Field2d();
     SmartDashboard.putData("Field", field);
     gyroYaw = new SpartanDoubleEntry("Swerve/Gyro/Yaw");
@@ -73,11 +74,11 @@ public class Swerve extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return swerveOdometry.getPoseMeters();
+    return swervePoseEstimator.getEstimatedPosition();
   }
 
   public void resetOdometry(Pose2d pose) {
-    swerveOdometry.resetPosition(getYaw(), getPositions(), pose);
+    swervePoseEstimator.resetPosition(getYaw(), getPositions(), pose);
   }
 
   public SwerveModuleState[] getStates() {
@@ -108,7 +109,7 @@ public class Swerve extends SubsystemBase {
 
   @Override
   public void periodic() {
-    swerveOdometry.update(getYaw(), getPositions());
+    swervePoseEstimator.update(getYaw(), getPositions());
     for (SwerveModule mod : mSwerveMods) {
       mod.periodic();
     }

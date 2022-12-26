@@ -65,7 +65,6 @@ public class RobotContainer {
 
   /** Register the autonomous modes to the chooser for the drivers to select. */
   public void registerAutons() {
-
     // Register autons.
     m_autonChooser.setDefaultOption("No-op", new InstantCommand());
     m_autonChooser.addOption("TestAuton", new TestAuto(m_swerve));

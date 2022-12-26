@@ -1,54 +1,45 @@
 package frc3512.lib.logging;
 
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 
-/** Wrapper class around DoubleLogEntry for additional features. */
-public class SpartanDoubleEntry implements SpartanLogEntry {
+/** Sets up a double value in NetworkTables with the option to be logged */
+public class SpartanDoubleEntry {
 
+  private DoubleTopic topic;
+  private DoublePublisher pub;
+  private DoubleSubscriber sub;
   private DoubleLogEntry log;
-  private double logValue = 0.0;
-  private long logTimestamp = 0;
-  private final DataLog logInstance = SpartanLogManager.getCurrentLog();
-
-  public SpartanDoubleEntry(String name, long timestamp) {
-    log = new DoubleLogEntry(logInstance, name, timestamp);
-    SpartanLogManager.addEntry(this);
-  }
-
-  public SpartanDoubleEntry(String name, String metadata) {
-    log = new DoubleLogEntry(logInstance, name, metadata);
-    SpartanLogManager.addEntry(this);
-  }
+  double defaultValue = 0.0;
+  boolean logged = false;
+  DataLog logInstance = SpartanLogManager.getCurrentLog();
 
   public SpartanDoubleEntry(String name) {
-    log = new DoubleLogEntry(logInstance, name);
-    SpartanLogManager.addEntry(this);
+    this(name, 0.0);
   }
 
-  /**
-   * Appends a record to the log.
-   *
-   * @param value Value to record
-   * @param timestamp Time stamp (may be 0 to indicate now)
-   */
-  public void append(double value, long timestamp) {
-    logValue = value;
-    logTimestamp = timestamp;
+  public SpartanDoubleEntry(String name, double defaultValue) {
+    this(name, defaultValue, false);
   }
 
-  /**
-   * Appends a record to the log.
-   *
-   * @param value Value to record
-   */
-  public void append(double value) {
-    logValue = value;
-    logTimestamp = 0;
+  public SpartanDoubleEntry(String name, double defaultValue, boolean logged) {
+    this.defaultValue = defaultValue;
+    this.logged = logged;
+
+    pub = topic.publish();
+    sub = topic.subscribe(defaultValue);
   }
 
-  @Override
-  public void processEntry() {
-    log.append(logValue, logTimestamp);
+  public void set(double value) {
+    pub.set(value);
+    if (SpartanLogManager.isCompetition()) log.append(value);
+  }
+
+  public double get() {
+    var currValue = sub.get();
+    return currValue;
   }
 }
