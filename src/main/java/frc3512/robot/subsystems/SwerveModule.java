@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc3512.lib.config.SwerveModuleConstants;
 import frc3512.lib.logging.SpartanDoubleEntry;
@@ -168,6 +169,10 @@ public class SwerveModule {
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(driveEncoder.getVelocity(), getAngle());
+  }
+
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(driveEncoder.getPosition(), getAngle());
   }
 
   public void periodic() {

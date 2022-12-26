@@ -49,7 +49,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     /* Driver Buttons */
-    zeroGyro.whenPressed(new InstantCommand(() -> m_swerve.zeroGyro()));
+    zeroGyro.onTrue(new InstantCommand(() -> m_swerve.zeroGyro()));
   }
 
   /** Used for joystick/xbox axis actions. */
@@ -60,7 +60,7 @@ public class RobotContainer {
             () -> -driver.getRawAxis(translationAxis),
             () -> -driver.getRawAxis(strafeAxis),
             () -> -driver.getRawAxis(rotationAxis),
-            () -> robotCentric.get()));
+            () -> robotCentric.getAsBoolean()));
   }
 
   /** Register the autonomous modes to the chooser for the drivers to select. */
