@@ -26,8 +26,11 @@ public class Swerve extends SubsystemBase {
   private final SpartanDoubleEntry gyroYaw;
   private final SpartanPose2dEntry odometryPose;
 
+  private final Vision m_vision;
+
   /** Subsystem class for the swerve drive. */
-  public Swerve() {
+  public Swerve(Vision vision) {
+    this.m_vision = vision;
     gyro = new Pigeon2(Constants.Swerve.pigeonID);
     gyro.configFactoryDefault();
     zeroGyro();
@@ -45,8 +48,8 @@ public class Swerve extends SubsystemBase {
             Constants.Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d());
     field = new Field2d();
     SmartDashboard.putData("Field", field);
-    gyroYaw = new SpartanDoubleEntry("Swerve/Gyro/Yaw", 0.0, true);
-    odometryPose = new SpartanPose2dEntry("Swerve/Odometry", new Pose2d(), true);
+    gyroYaw = new SpartanDoubleEntry("/Diagnostics/Swerve/Gyro/Yaw", 0.0, true);
+    odometryPose = new SpartanPose2dEntry("/Diagnostics/Swerve/Odometry", new Pose2d(), true);
   }
 
   public void drive(
@@ -109,6 +112,7 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     swervePoseEstimator.update(getYaw(), getPositions());
+    swervePoseEstimator.addVisionMeasurement(m_vision.getRobotPose(), m_vision.getTimestamp());
     for (SwerveModule mod : mSwerveMods) {
       mod.periodic();
     }

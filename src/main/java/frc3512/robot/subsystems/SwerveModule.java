@@ -70,10 +70,13 @@ public class SwerveModule {
     configDriveMotor();
 
     /* Logging Config */
-    cancoderReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/CANCoder", 0.0, true);
+    cancoderReading =
+        new SpartanDoubleEntry("/Diagnostics/Swerve/Mod " + moduleNumber + "/CANCoder", 0.0, true);
     integratedReading =
-        new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Integrated", 0.0, true);
-    velocityReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Velocity", 0.0, true);
+        new SpartanDoubleEntry(
+            "/Diagnostics/Swerve/Mod " + moduleNumber + "/Integrated", 0.0, true);
+    velocityReading =
+        new SpartanDoubleEntry("/Diagnostics/Swerve/Mod " + moduleNumber + "/Velocity", 0.0, true);
 
     lastAngle = getState().angle;
   }

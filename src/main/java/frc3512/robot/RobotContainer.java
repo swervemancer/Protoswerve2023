@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc3512.robot.auton.TestAuto;
 import frc3512.robot.commands.driving.TeleopSwerve;
 import frc3512.robot.subsystems.Swerve;
+import frc3512.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +23,8 @@ public class RobotContainer {
   private final SendableChooser<Command> m_autonChooser = new SendableChooser<Command>();
 
   // Robot subsystems
-  private Swerve m_swerve = new Swerve();
+  private Vision m_vision = new Vision();
+  private Swerve m_swerve = new Swerve(m_vision);
 
   // Xbox controllers
   private final Joystick driver = new Joystick(Constants.Joysticks.xboxControllerPort);

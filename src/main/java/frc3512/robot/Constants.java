@@ -2,7 +2,10 @@ package frc3512.robot;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import frc3512.lib.config.SwerveModuleConstants;
@@ -137,15 +140,25 @@ public final class Constants {
     }
   }
 
-  /* Auton constants */
-  public static final class AutoConstants {
-    public static final double maxSpeedMetersPerSecond = 3;
-    public static final double maxAccelerationMetersPerSecondSquared = 3;
-    public static final double maxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double maxAngularSpeedRadiansPerSecondSquared = Math.PI;
+  public static final class Vision {
+    // Vision Camera Name
+    public static String visionCameraName = "mmal_service_16.1";
 
-    public static final double pXController = 1.0;
-    public static final double pYController = 1.0;
-    public static final double pThetaController = 1.0;
+    // Target Height (in Meters)
+    public static final double targetHeightMeters = 2.606;
+
+    // Camera Height (in Meters)
+    public static final double cameraHeightMeters = 0.76835;
+
+    // Camera Pitch (in Degrees)
+    public static final double cameraPitchDegrees = 39.6;
+
+    // Camera Yaw offset (in Degrees)
+    public static final double cameraYawOffset = 3.5;
+
+    // Physical camera location
+    public static final Transform3d CAMERA_TO_ROBOT =
+        new Transform3d(new Translation3d(0.5, 0.5, cameraHeightMeters), new Rotation3d());
+    public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
   }
 }
