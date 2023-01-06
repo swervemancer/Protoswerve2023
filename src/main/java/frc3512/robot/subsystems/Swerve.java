@@ -1,12 +1,13 @@
 package frc3512.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,24 +19,21 @@ import frc3512.robot.Constants;
 public class Swerve extends SubsystemBase {
   private final Pigeon2 gyro;
 
-  private SwerveDriveOdometry swerveOdometry;
+  private SwerveDrivePoseEstimator swervePoseEstimator;
   private SwerveModule[] mSwerveMods;
 
   private Field2d field;
   private final SpartanDoubleEntry gyroYaw;
   private final SpartanPose2dEntry odometryPose;
 
+  private final Vision m_vision;
+
   /** Subsystem class for the swerve drive. */
-  public Swerve() {
+  public Swerve(Vision vision) {
+    this.m_vision = vision;
     gyro = new Pigeon2(Constants.Swerve.pigeonID);
     gyro.configFactoryDefault();
     zeroGyro();
-
-    swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw());
-    field = new Field2d();
-    SmartDashboard.putData("Field", field);
-    gyroYaw = new SpartanDoubleEntry("Swerve/Gyro/Yaw");
-    odometryPose = new SpartanPose2dEntry("Swerve/Odometry");
 
     mSwerveMods =
         new SwerveModule[] {
@@ -44,6 +42,14 @@ public class Swerve extends SubsystemBase {
           new SwerveModule(2, Constants.Swerve.Mod2.constants),
           new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
+
+    swervePoseEstimator =
+        new SwerveDrivePoseEstimator(
+            Constants.Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d());
+    field = new Field2d();
+    SmartDashboard.putData("Field", field);
+    gyroYaw = new SpartanDoubleEntry("/Diagnostics/Swerve/Gyro/Yaw", 0.0, true);
+    odometryPose = new SpartanPose2dEntry("/Diagnostics/Swerve/Odometry", new Pose2d(), true);
   }
 
   public void drive(
@@ -61,7 +67,6 @@ public class Swerve extends SubsystemBase {
     }
   }
 
-  /* Used by SwerveControllerCommand in Auto */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
@@ -71,11 +76,11 @@ public class Swerve extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return swerveOdometry.getPoseMeters();
+    return swervePoseEstimator.getEstimatedPosition();
   }
 
   public void resetOdometry(Pose2d pose) {
-    swerveOdometry.resetPosition(pose, getYaw());
+    swervePoseEstimator.resetPosition(getYaw(), getPositions(), pose);
   }
 
   public SwerveModuleState[] getStates() {
@@ -84,6 +89,14 @@ public class Swerve extends SubsystemBase {
       states[mod.moduleNumber] = mod.getState();
     }
     return states;
+  }
+
+  public SwerveModulePosition[] getPositions() {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    for (SwerveModule mod : mSwerveMods) {
+      positions[mod.moduleNumber] = mod.getPosition();
+    }
+    return positions;
   }
 
   public void zeroGyro() {
@@ -98,11 +111,12 @@ public class Swerve extends SubsystemBase {
 
   @Override
   public void periodic() {
-    swerveOdometry.update(getYaw(), getStates());
+    swervePoseEstimator.update(getYaw(), getPositions());
+    swervePoseEstimator.addVisionMeasurement(m_vision.getRobotPose(), m_vision.getTimestamp());
     for (SwerveModule mod : mSwerveMods) {
       mod.periodic();
     }
-    gyroYaw.append(getYaw().getDegrees());
-    odometryPose.append(getPose());
+    gyroYaw.set(getYaw().getDegrees());
+    odometryPose.set(getPose());
   }
 }

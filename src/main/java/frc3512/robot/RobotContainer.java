@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc3512.robot.auton.TestAuto;
 import frc3512.robot.commands.driving.TeleopSwerve;
 import frc3512.robot.subsystems.Swerve;
+import frc3512.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +23,8 @@ public class RobotContainer {
   private final SendableChooser<Command> m_autonChooser = new SendableChooser<Command>();
 
   // Robot subsystems
-  private Swerve m_swerve = new Swerve();
+  private Vision m_vision = new Vision();
+  private Swerve m_swerve = new Swerve(m_vision);
 
   // Xbox controllers
   private final Joystick driver = new Joystick(Constants.Joysticks.xboxControllerPort);
@@ -49,7 +51,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     /* Driver Buttons */
-    zeroGyro.whenPressed(new InstantCommand(() -> m_swerve.zeroGyro()));
+    zeroGyro.onTrue(new InstantCommand(() -> m_swerve.zeroGyro()));
   }
 
   /** Used for joystick/xbox axis actions. */
@@ -60,12 +62,11 @@ public class RobotContainer {
             () -> -driver.getRawAxis(translationAxis),
             () -> -driver.getRawAxis(strafeAxis),
             () -> -driver.getRawAxis(rotationAxis),
-            () -> robotCentric.get()));
+            () -> robotCentric.getAsBoolean()));
   }
 
   /** Register the autonomous modes to the chooser for the drivers to select. */
   public void registerAutons() {
-
     // Register autons.
     m_autonChooser.setDefaultOption("No-op", new InstantCommand());
     m_autonChooser.addOption("TestAuton", new TestAuto(m_swerve));

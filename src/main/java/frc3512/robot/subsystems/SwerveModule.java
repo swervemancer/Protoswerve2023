@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc3512.lib.config.SwerveModuleConstants;
 import frc3512.lib.logging.SpartanDoubleEntry;
@@ -69,9 +70,13 @@ public class SwerveModule {
     configDriveMotor();
 
     /* Logging Config */
-    cancoderReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/CANCoder");
-    integratedReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Integrated");
-    velocityReading = new SpartanDoubleEntry("Swerve/Mod " + moduleNumber + "/Velocity");
+    cancoderReading =
+        new SpartanDoubleEntry("/Diagnostics/Swerve/Mod " + moduleNumber + "/CANCoder", 0.0, true);
+    integratedReading =
+        new SpartanDoubleEntry(
+            "/Diagnostics/Swerve/Mod " + moduleNumber + "/Integrated", 0.0, true);
+    velocityReading =
+        new SpartanDoubleEntry("/Diagnostics/Swerve/Mod " + moduleNumber + "/Velocity", 0.0, true);
 
     lastAngle = getState().angle;
   }
@@ -170,9 +175,13 @@ public class SwerveModule {
     return new SwerveModuleState(driveEncoder.getVelocity(), getAngle());
   }
 
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(driveEncoder.getPosition(), getAngle());
+  }
+
   public void periodic() {
-    cancoderReading.append(getCanCoder().getDegrees());
-    integratedReading.append(getAngle().getDegrees());
-    velocityReading.append(driveEncoder.getVelocity());
+    cancoderReading.set(getCanCoder().getDegrees());
+    integratedReading.set(getAngle().getDegrees());
+    velocityReading.set(driveEncoder.getVelocity());
   }
 }

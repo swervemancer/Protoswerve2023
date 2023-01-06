@@ -29,13 +29,13 @@ public class CANCoderUtil {
       cancoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 10);
     } else if (usage == CANCoderUsage.kSensorDataOnly) {
       cancoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 10);
-      cancoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 255);
+      cancoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 100);
     } else if (usage == CANCoderUsage.kFaultsOnly) {
-      cancoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
+      cancoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100);
       cancoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 10);
     } else if (usage == CANCoderUsage.kMinimal) {
-      cancoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
-      cancoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 255);
+      cancoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100);
+      cancoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 100);
     }
   }
 }

@@ -1,54 +1,46 @@
 package frc3512.lib.logging;
 
+import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.networktables.StringSubscriber;
+import edu.wpi.first.networktables.StringTopic;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.StringLogEntry;
 
-/** Wrapper class around StringLogEntry for additional features. */
-public class SpartanStringEntry implements SpartanLogEntry {
+/** Sets up a string value in NetworkTables with the option to be logged */
+public class SpartanStringEntry {
 
+  private StringTopic topic;
+  private StringPublisher pub;
+  private StringSubscriber sub;
   private StringLogEntry log;
-  private String logValue = "";
-  private long logTimestamp = 0;
-  private final DataLog logInstance = SpartanLogManager.getCurrentLog();
-
-  public SpartanStringEntry(String name, long timestamp) {
-    log = new StringLogEntry(logInstance, name, timestamp);
-    SpartanLogManager.addEntry(this);
-  }
-
-  public SpartanStringEntry(String name, String metadata) {
-    log = new StringLogEntry(logInstance, name, metadata);
-    SpartanLogManager.addEntry(this);
-  }
+  String defaultValue = "";
+  boolean logged = false;
+  DataLog logInstance = SpartanLogManager.getCurrentLog();
 
   public SpartanStringEntry(String name) {
+    this(name, "");
+  }
+
+  public SpartanStringEntry(String name, String value) {
+    this(name, value, false);
+  }
+
+  public SpartanStringEntry(String name, String value, boolean logged) {
+    this.defaultValue = value;
+    this.logged = logged;
+    topic = SpartanLogManager.getNTInstance().getStringTopic(name);
     log = new StringLogEntry(logInstance, name);
-    SpartanLogManager.addEntry(this);
   }
 
-  /**
-   * Appends a record to the log.
-   *
-   * @param value Value to record
-   * @param timestamp Time stamp (may be 0 to indicate now)
-   */
-  public void append(String value, long timestamp) {
-    logValue = value;
-    logTimestamp = timestamp;
+  public void set(String value) {
+    if (pub == null) pub = topic.publish();
+    pub.set(value);
+    if (SpartanLogManager.isCompetition() && logged) log.append(value);
   }
 
-  /**
-   * Appends a record to the log.
-   *
-   * @param value Value to record
-   */
-  public void append(String value) {
-    logValue = value;
-    logTimestamp = 0;
-  }
-
-  @Override
-  public void processEntry() {
-    log.append(logValue, logTimestamp);
+  public String get() {
+    if (sub == null) sub = topic.subscribe(defaultValue);
+    var currValue = sub.get();
+    return currValue;
   }
 }

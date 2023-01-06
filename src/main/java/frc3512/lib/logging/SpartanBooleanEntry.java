@@ -1,54 +1,46 @@
 package frc3512.lib.logging;
 
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DataLog;
 
-/** Wrapper class around BooleanLogEntry for additional features. */
-public class SpartanBooleanEntry implements SpartanLogEntry {
+/** Sets up a boolean value in NetworkTables with the option to be logged */
+public class SpartanBooleanEntry {
 
+  private BooleanTopic topic;
+  private BooleanPublisher pub;
+  private BooleanSubscriber sub;
   private BooleanLogEntry log;
-  private boolean logValue = false;
-  private long logTimestamp = 0;
-  private final DataLog logInstance = SpartanLogManager.getCurrentLog();
-
-  public SpartanBooleanEntry(String name, long timestamp) {
-    log = new BooleanLogEntry(logInstance, name, timestamp);
-    SpartanLogManager.addEntry(this);
-  }
-
-  public SpartanBooleanEntry(String name, String metadata) {
-    log = new BooleanLogEntry(logInstance, name, metadata);
-    SpartanLogManager.addEntry(this);
-  }
+  boolean defaultValue = false;
+  boolean logged = false;
+  DataLog logInstance = SpartanLogManager.getCurrentLog();
 
   public SpartanBooleanEntry(String name) {
+    this(name, false);
+  }
+
+  public SpartanBooleanEntry(String name, boolean value) {
+    this(name, value, false);
+  }
+
+  public SpartanBooleanEntry(String name, boolean value, boolean logged) {
+    this.defaultValue = value;
+    this.logged = logged;
+    topic = SpartanLogManager.getNTInstance().getBooleanTopic(name);
     log = new BooleanLogEntry(logInstance, name);
-    SpartanLogManager.addEntry(this);
   }
 
-  /**
-   * Appends a record to the log.
-   *
-   * @param value Value to record
-   * @param timestamp Time stamp (may be 0 to indicate now)
-   */
-  public void append(boolean value, long timestamp) {
-    logValue = value;
-    logTimestamp = timestamp;
+  public void set(boolean value) {
+    if (pub == null) pub = topic.publish();
+    pub.set(value);
+    if (SpartanLogManager.isCompetition() && logged) log.append(value);
   }
 
-  /**
-   * Appends a record to the log.
-   *
-   * @param value Value to record
-   */
-  public void append(boolean value) {
-    logValue = value;
-    logTimestamp = 0;
-  }
-
-  @Override
-  public void processEntry() {
-    log.append(logValue, logTimestamp);
+  public boolean get() {
+    if (sub == null) sub = topic.subscribe(defaultValue);
+    var currValue = sub.get();
+    return currValue;
   }
 }

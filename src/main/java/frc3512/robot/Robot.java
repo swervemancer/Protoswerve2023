@@ -2,7 +2,6 @@ package frc3512.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc3512.lib.config.CTREConfigs;
@@ -22,9 +21,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     // Silence joystick connection warnings.
-    // Also diable LiveWindow as we don't find use in it.
     DriverStation.silenceJoystickConnectionWarning(true);
-    LiveWindow.disableAllTelemetry();
 
     // Enable logging
     SpartanLogManager.setCompetitionMode(Constants.General.competitionMode);
@@ -38,9 +35,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-    // Process and log all of the entered log entries.
-    SpartanLogManager.processEntries();
   }
 
   @Override
