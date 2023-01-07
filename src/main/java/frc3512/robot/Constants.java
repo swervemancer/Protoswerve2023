@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import frc3512.lib.config.SwerveModuleConstants;
+import frc3512.lib.util.SwerveModuleConstants;
 
 /** Constants for the robot project */
 public final class Constants {
