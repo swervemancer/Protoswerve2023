@@ -2,6 +2,7 @@ package frc3512.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc3512.lib.logging.SpartanLogManager;
@@ -18,6 +19,7 @@ public class Robot extends TimedRobot {
 
     // Silence joystick connection warnings.
     DriverStation.silenceJoystickConnectionWarning(true);
+    LiveWindow.disableAllTelemetry();
 
     // Enable logging
     SpartanLogManager.setCompetitionMode(Constants.General.competitionMode);
